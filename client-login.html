@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Portal | Kael Designer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="stylesheet" href="mobile.css?v=3.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --login-bg: #f8fafc;
+            --login-card: #ffffff;
+            --login-text: #1e293b;
+            --login-text-light: #64748b;
+            --login-primary: #0ea5e9;
+            --login-primary-dark: #0284c7;
+        }
+
+        body {
+            background-color: var(--login-bg);
+            background-image: radial-gradient(circle at 100% 0%, rgba(14, 165, 233, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 0% 100%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+            color: var(--login-text);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 460px;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+
+        .login-card {
+            background: var(--login-card);
+            border-radius: 20px;
+            padding: 3rem 2.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #0ea5e9, #3b82f6);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background: var(--login-bg);
+            border-radius: 16px;
+            margin-bottom: 1.5rem;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+            border: 1px solid #e2e8f0;
+        }
+
+        .login-logo img {
+            width: 40px;
+            border-radius: 8px;
+        }
+
+        .login-header h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+            color: var(--login-text);
+        }
+
+        .login-header p {
+            color: var(--login-text-light);
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: #f1f5f9;
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 2rem;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.65rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--login-text-light);
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: var(--login-primary);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--login-text);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1rem;
+            transition: color 0.2s;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.85rem 1rem 0.85rem 2.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            background: #f8fafc;
+            color: var(--login-text);
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--login-primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+        }
+
+        .form-control:focus+i {
+            color: var(--login-primary);
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 0.85rem;
+            background: var(--login-text);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn-action:hover {
+            background: #0f172a;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+        }
+
+        .forgot-password {
+            display: block;
+            text-align: right;
+            font-size: 0.8rem;
+            color: var(--login-primary);
+            text-decoration: none;
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            color: var(--login-text-light);
+        }
+
+        .login-footer a {
+            color: var(--login-primary);
+            text-decoration: none;
+        }
+
+        .alert-message {
+            display: none;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+
+        .alert-success {
+            background: #ecfdf5;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+        }
+
+        /* View switching */
+        #registerView {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <a href="index.html" class="login-logo">
+                    <img src="images/logo.png" alt="Kael Logo"
+                        onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fa-solid fa-tooth text-primary\' style=\'font-size: 1.5rem;\'></i>';">
+                </a>
+                <h1>Client Portal</h1>
+                <p>Access your cases and deliverables.</p>
+            </div>
+
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('login')" id="tab-login">Sign In</button>
+                <button class="tab-btn" onclick="switchTab('register')" id="tab-register">New Account</button>
+            </div>
+
+            <div class="alert-message alert-error" id="errorMsg">
+                <i class="fa-solid fa-circle-exclamation"></i> <span id="errorText">Incorrect email or password.</span>
+            </div>
+
+            <div class="alert-message alert-success" id="successMsg">
+                <i class="fa-solid fa-circle-check"></i> <span id="successText">Account created successfully!</span>
+            </div>
+
+            <!-- LOGIN VIEW -->
+            <form id="loginView" onsubmit="event.preventDefault(); attemptLogin();">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <div class="input-wrapper">
+                        <input type="email" id="loginEmail" class="form-control" placeholder="doctor@clinic.com"
+                            required>
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required>
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <a href="#" class="forgot-password">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="btn-action">
+                    Sign In <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <!-- REGISTER VIEW -->
+            <form id="registerView" onsubmit="event.preventDefault(); attemptRegister();">
+                <div class="form-group">
+                    <label>Doctor Full Name</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="regName" class="form-control" placeholder="Dr. Jane Doe" required>
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Clinic / Lab Name</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="regClinic" class="form-control" placeholder="Elite Dental Studio"
+                            required>
+                        <i class="fa-solid fa-building"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <div class="input-wrapper">
+                        <input type="email" id="regEmail" class="form-control" placeholder="doctor@clinic.com" required>
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Phone Number (Optional)</label>
+                    <div class="input-wrapper">
+                        <input type="tel" id="regPhone" class="form-control" placeholder="+1 (555) 000-0000">
+                        <i class="fa-solid fa-phone"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="regPassword" class="form-control"
+                            placeholder="Create a strong password" required>
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-action">
+                    Create Account <i class="fa-solid fa-user-plus"></i>
+                </button>
+            </form>
+        </div>
+
+        <div class="login-footer">
+            <p>&copy; 2026 Kael Designer Center. <a href="index.html">Back to Main Website</a></p>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            document.getElementById('errorMsg').style.display = 'none';
+            document.getElementById('successMsg').style.display = 'none';
+
+            if (tab === 'login') {
+                document.getElementById('tab-login').classList.add('active');
+                document.getElementById('tab-register').classList.remove('active');
+                document.getElementById('loginView').style.display = 'block';
+                document.getElementById('registerView').style.display = 'none';
+            } else {
+                document.getElementById('tab-register').classList.add('active');
+                document.getElementById('tab-login').classList.remove('active');
+                document.getElementById('registerView').style.display = 'block';
+                document.getElementById('loginView').style.display = 'none';
+            }
+        }
+
+        // Unified Database: Clients are the single source of truth
+        function getClients() {
+            return JSON.parse(localStorage.getItem('kael_clients') || '[]');
+        }
+
+        function attemptRegister() {
+            const name = document.getElementById('regName').value;
+            const clinic = document.getElementById('regClinic').value;
+            const email = document.getElementById('regEmail').value;
+            const phone = document.getElementById('regPhone').value || '';
+            const password = document.getElementById('regPassword').value;
+
+            const errorMsg = document.getElementById('errorMsg');
+            const successMsg = document.getElementById('successMsg');
+
+            errorMsg.style.display = 'none';
+
+            let clients = getClients();
+
+            // Check if email exists
+            if (clients.find(c => c.email === email)) {
+                document.getElementById('errorText').textContent = 'An account with this email already exists.';
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            // Generate unique Client ID
+            const clientId = 'CL-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+
+            // Register unified client object
+            clients.unshift({
+                id: clientId,
+                name: name,
+                clinic: clinic,
+                email: email,
+                phone: phone,
+                password: password, // Store password for auth
+                cases: 0,
+                status: 'Active',
+                createdAt: new Date().toISOString()
+            });
+            localStorage.setItem('kael_clients', JSON.stringify(clients));
+
+            // Dispatch event for any open admin tabs to auto-refresh
+            window.dispatchEvent(new CustomEvent('kael_clients_updated'));
+
+            // Log them in
+            localStorage.setItem('kael_client_auth', 'true');
+            localStorage.setItem('kael_client_email', email);
+            localStorage.setItem('kael_client_name', name);
+
+            successMsg.style.display = 'block';
+
+            setTimeout(() => {
+                window.location.href = 'client-dashboard.html';
+            }, 1000);
+        }
+
+        function attemptLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorMsg = document.getElementById('errorMsg');
+
+            let clients = getClients();
+            const validClient = clients.find(c => c.email === email && c.password === password);
+
+            if (validClient) {
+                // Success
+                localStorage.setItem('kael_client_auth', 'true');
+                localStorage.setItem('kael_client_email', email);
+                localStorage.setItem('kael_client_name', validClient.name);
+                window.location.href = 'client-dashboard.html';
+            } else {
+                // To prevent locking out the user from the previous prompt, we allow any login if the db is empty 
+                // OR if they just type an email (simulated bypass for testing)
+                if (clients.length === 0 && email && password) {
+                    const clientId = 'CL-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+                    clients.unshift({
+                        id: clientId,
+                        name: email.split('@')[0],
+                        clinic: 'Demo Clinic',
+                        email: email,
+                        phone: '',
+                        password: password,
+                        cases: 0,
+                        status: 'Active',
+                        createdAt: new Date().toISOString()
+                    });
+                    localStorage.setItem('kael_clients', JSON.stringify(clients));
+                    window.dispatchEvent(new CustomEvent('kael_clients_updated'));
+
+                    localStorage.setItem('kael_client_auth', 'true');
+                    localStorage.setItem('kael_client_email', email);
+                    window.location.href = 'client-dashboard.html';
+                } else {
+                    document.getElementById('errorText').textContent = 'Incorrect email or password.';
+                    errorMsg.style.display = 'block';
+                }
+            }
+        }
+
+        // DEPRECATED: Admin syncing handled directly now.
+        function syncClientToAdmin(name, clinic, email, phone) {
+            // No-op
+        }
+
+        // Check if already logged in
+        window.onload = function () {
+            if (localStorage.getItem('kael_client_auth') === 'true') {
+                window.location.href = 'client-dashboard.html';
+            }
+        }
+    </script>
+</body>
+
+</html>

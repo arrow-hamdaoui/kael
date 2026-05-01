@@ -1,0 +1,542 @@
+/* ==========================================================================
+   KAEL DESIGNER — Mobile-First Responsive Stylesheet
+   Covers: Landing Page, Client Dashboard, Admin Dashboard
+   Breakpoints: 992px (tablet), 768px (mobile), 480px (small phone)
+   ========================================================================== */
+
+/* ── GLOBAL MOBILE BASE ─────────────────────────────────────────────────── */
+html {
+    -webkit-text-size-adjust: 100%;    /* Prevent iOS font scaling */
+    text-size-adjust: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent; /* Remove tap flash on iOS */
+}
+
+/* Larger tap targets for all interactive elements */
+button, a, input, select, textarea {
+    min-height: 44px;                  /* Apple's recommended minimum */
+    touch-action: manipulation;        /* Prevent double-tap zoom */
+}
+
+/* Prevent inputs from zooming on iOS (must be 16px+ font size) */
+input, select, textarea {
+    font-size: 16px !important;
+}
+
+/* ── HAMBURGER BUTTON (hidden on desktop) ──────────────────────────────── */
+.hamburger-btn {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    min-height: unset;
+    flex-direction: column;
+    gap: 5px;
+    z-index: 1001;
+}
+
+.hamburger-btn span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: #0f172a;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.hamburger-btn.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+.hamburger-btn.open span:nth-child(2) { opacity: 0; }
+.hamburger-btn.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+/* ── MOBILE OVERLAY MENU ─────────────────────────────────────────────────── */
+.mobile-menu-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+    backdrop-filter: blur(4px);
+}
+
+.mobile-nav-drawer {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: min(80vw, 320px);
+    height: 100vh;
+    background: #fff;
+    z-index: 999;
+    padding: 5rem 2rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.15);
+    overflow-y: auto;
+}
+
+.mobile-nav-drawer.open { right: 0; }
+
+.mobile-nav-drawer a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1e293b;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    text-decoration: none;
+    transition: all 0.2s;
+    min-height: 52px;
+}
+
+.mobile-nav-drawer a:hover {
+    background: #f1f5f9;
+    border-color: #00D1FF;
+    color: #00D1FF;
+}
+
+.mobile-nav-drawer .drawer-actions {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.mobile-nav-drawer .drawer-actions a {
+    justify-content: center;
+    font-size: 1rem;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════════
+   TABLET & MOBILE BREAKPOINT (≤ 992px)
+   ════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 992px) {
+
+    /* ── LANDING PAGE NAVBAR ─────────────────────────────────────────── */
+    .navbar {
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        transform: none !important;
+        border-radius: 0 !important;
+        padding: 0.75rem 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-top: none !important;
+    }
+
+    .navbar.scrolled {
+        width: 100% !important;
+    }
+
+    .nav-container {
+        padding: 0 1rem !important;
+    }
+
+    .nav-links {
+        display: none !important;           /* Hidden — replaced by drawer */
+    }
+
+    .nav-actions .btn-outline {
+        display: none !important;           /* Hide Client Portal on mobile */
+    }
+
+    .nav-actions .btn-primary {
+        padding: 0.6rem 1.1rem !important;
+        font-size: 0.85rem !important;
+        min-height: 40px !important;
+    }
+
+    .hamburger-btn {
+        display: flex !important;
+    }
+
+    /* ── HERO SECTION ──────────────────────────────────────────────── */
+    .hero {
+        padding: 100px 1.25rem 60px !important;
+        min-height: auto !important;
+        flex-direction: column !important;
+        text-align: center !important;
+    }
+
+    .hero .hero-content {
+        max-width: 100% !important;
+        margin: 0 !important;
+    }
+
+    .hero-title {
+        font-size: 2.6rem !important;
+        margin-bottom: 1rem !important;
+    }
+
+    .hero-subtitle {
+        font-size: 1rem !important;
+        margin-bottom: 1.75rem !important;
+        max-width: 100% !important;
+    }
+
+    .hero-cta {
+        flex-direction: column !important;
+        gap: 0.75rem !important;
+        margin-bottom: 2rem !important;
+    }
+
+    .hero-cta .btn {
+        width: 100% !important;
+        justify-content: center !important;
+        padding: 1rem !important;
+        font-size: 1rem !important;
+    }
+
+    .value-props {
+        justify-content: center !important;
+        gap: 0.6rem !important;
+    }
+
+    .value-item {
+        font-size: 0.8rem !important;
+        padding: 0.4rem 0.8rem !important;
+    }
+
+    .hero-image-container {
+        display: none !important;           /* Hide decorative logo on mobile */
+    }
+
+    /* ── SECTIONS ──────────────────────────────────────────────────── */
+    .container {
+        padding: 0 1rem !important;
+    }
+
+    .section {
+        padding: 4rem 0 !important;
+    }
+
+    .section-title {
+        font-size: 1.75rem !important;
+    }
+
+    .section-desc {
+        font-size: 0.95rem !important;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+
+    .portfolio-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+    }
+
+    .workflow-timeline {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 1.5rem !important;
+    }
+
+    .workflow-timeline::before {
+        display: none !important;
+    }
+
+    .timeline-step {
+        width: 100% !important;
+        text-align: left !important;
+        display: flex !important;
+        gap: 1rem !important;
+        align-items: flex-start !important;
+    }
+
+    .footer-content {
+        flex-direction: column !important;
+        gap: 2rem !important;
+        text-align: center !important;
+    }
+
+    .footer-links {
+        justify-content: center !important;
+    }
+
+
+    /* ── ADMIN DASHBOARD ───────────────────────────────────────────── */
+    .admin-layout {
+        flex-direction: column !important;
+        min-height: auto !important;
+    }
+
+    .admin-sidebar {
+        position: sticky !important;
+        top: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        flex-direction: column !important;
+        z-index: 200 !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3) !important;
+    }
+
+    .admin-brand {
+        padding: 0.85rem 1.25rem !important;
+        border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+    }
+
+    .admin-nav {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        padding: 0.6rem 0.75rem !important;
+        gap: 0.35rem !important;
+        flex: none !important;
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
+        border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+    }
+
+    .admin-nav::-webkit-scrollbar { display: none !important; }
+
+    .admin-nav a {
+        flex-shrink: 0 !important;
+        padding: 0.55rem 0.9rem !important;
+        font-size: 0.78rem !important;
+        margin-bottom: 0 !important;
+        gap: 0.4rem !important;
+        white-space: nowrap !important;
+        border-radius: 8px !important;
+    }
+
+    .admin-nav a:hover { transform: none !important; }
+
+    .admin-user {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        padding: 0.75rem 1rem !important;
+        gap: 0.75rem !important;
+    }
+
+    .admin-user-info { flex: 1 !important; margin-bottom: 0 !important; }
+
+    .admin-user .sidebar-btn {
+        width: auto !important;
+        padding: 0.5rem 0.9rem !important;
+        font-size: 0.78rem !important;
+        flex-shrink: 0 !important;
+    }
+
+    .admin-main {
+        margin-left: 0 !important;
+        padding: 1.25rem !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .admin-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 0.75rem !important;
+        margin-bottom: 1.5rem !important;
+    }
+
+    .admin-header h2 { font-size: 1.4rem !important; }
+
+    .admin-header > button,
+    .admin-header > a {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+
+    .stat-cards {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.75rem !important;
+    }
+
+    .stat-card { padding: 1.25rem !important; }
+    .stat-value { font-size: 1.5rem !important; }
+
+    .cases-grid { grid-template-columns: 1fr !important; }
+
+    .case-table-wrap,
+    .table-wrap {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    table {
+        min-width: 560px !important;
+    }
+
+    /* Admin modals */
+    .modal-content {
+        width: 95vw !important;
+        max-width: 95vw !important;
+        max-height: 88vh !important;
+        overflow-y: auto !important;
+        border-radius: 20px !important;
+        padding: 1.5rem !important;
+    }
+
+
+    /* ── CLIENT DASHBOARD ──────────────────────────────────────────── */
+    .client-layout {
+        flex-direction: column !important;
+    }
+
+    .client-sidebar {
+        width: 100% !important;
+        height: auto !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 200 !important;
+        padding: 0.75rem 1rem !important;
+        border-right: none !important;
+        border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3) !important;
+        display: block !important;
+    }
+
+    .client-brand { display: none !important; }
+
+    /* User row: avatar + name */
+    .client-user {
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.75rem !important;
+        margin-bottom: 0.65rem !important;
+        padding: 0 !important;
+    }
+
+    /* Nav tabs row */
+    .client-nav {
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 0.4rem !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
+    }
+
+    .client-nav::-webkit-scrollbar { display: none !important; }
+
+    .client-nav a {
+        flex-shrink: 0 !important;
+        padding: 0.55rem 1rem !important;
+        margin: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        font-size: 0.82rem !important;
+        border-radius: 8px !important;
+        white-space: nowrap !important;
+    }
+
+    /* Hide sidebar footer (Website + Logout) on mobile */
+    .client-sidebar > div:last-child {
+        display: none !important;
+    }
+
+    .client-main {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 1rem !important;
+        box-sizing: border-box !important;
+    }
+
+    .cases-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .filters-bar {
+        flex-direction: column !important;
+        gap: 0.75rem !important;
+    }
+
+    .search-box {
+        min-width: unset !important;
+        width: 100% !important;
+    }
+
+    .page-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 0.75rem !important;
+    }
+
+    .page-title h1 { font-size: 1.5rem !important; }
+
+    /* Multi-step form */
+    .step-indicator {
+        gap: 0.25rem !important;
+        overflow-x: auto !important;
+    }
+
+    .step-label { display: none !important; }
+
+    .submission-body {
+        flex-direction: column !important;
+    }
+
+    .submission-sidebar {
+        width: 100% !important;
+        border-right: none !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        padding-bottom: 1.5rem !important;
+    }
+
+    .radio-cards {
+        grid-template-columns: 1fr 1fr !important;
+    }
+
+    .form-navigation {
+        flex-direction: column !important;
+        gap: 0.75rem !important;
+    }
+
+    .form-navigation .btn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+
+    /* Case detail modal images */
+    .modal-content > div > div[style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+
+/* ════════════════════════════════════════════════════════════════════════
+   SMALL PHONE BREAKPOINT (≤ 480px)
+   ════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+    .hero-title { font-size: 2.1rem !important; }
+
+    .stat-cards { grid-template-columns: 1fr !important; }
+
+    .case-card { padding: 1rem !important; }
+
+    .page-title h1 { font-size: 1.3rem !important; }
+
+    .admin-brand span { font-size: 0.9rem !important; }
+
+    .radio-cards { grid-template-columns: 1fr !important; }
+
+    /* Ensure modals stack image grid */
+    .modal-content div[style*="grid"] {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+}

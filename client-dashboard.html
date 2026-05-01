@@ -1,0 +1,1705 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Dashboard | Kael Designer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="stylesheet" href="mobile.css?v=3.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase_config.js"></script>
+    <script src="kael_core.js"></script>
+    <script src="translations.js" defer></script>
+    <style>
+        :root {
+            --dash-bg: radial-gradient(circle at top right, #1e1b4b, #020617, #020617);
+            --dash-card: rgba(15, 23, 42, 0.45);
+            --dash-border: rgba(255, 255, 255, 0.1);
+            --dash-text: #f8fafc;
+            --dash-text-light: #94a3b8;
+            --dash-primary: #00D1FF;
+            --dash-hover: rgba(255, 255, 255, 0.06);
+            --glow-primary: 0 0 20px rgba(0, 209, 255, 0.4);
+        }
+
+        body {
+            background: var(--dash-bg);
+            background-attachment: fixed;
+            color: var(--dash-text);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--dash-text);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #0066FF, #00D1FF);
+            color: #fff !important;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 209, 255, 0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(0, 209, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Top Navigation */
+        .dash-header {
+            background: var(--dash-card);
+            border-bottom: 1px solid var(--dash-border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .dash-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--dash-text);
+            text-decoration: none;
+        }
+
+        .dash-brand img {
+            height: 32px;
+            border-radius: 6px;
+        }
+
+        .dash-user {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .dash-user-info {
+            text-align: right;
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .dash-user-info {
+                display: block;
+            }
+        }
+
+        .dash-user-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .dash-user-clinic {
+            font-size: 0.8rem;
+            color: var(--dash-text-light);
+            margin: 0;
+        }
+
+        .dash-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: white;
+        }
+
+        /* Main Content Grid */
+        .dash-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            flex: 1;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-title h1 {
+            font-size: 2.2rem;
+            margin: 0 0 0.25rem 0;
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(to right, #ffffff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .page-title p {
+            color: var(--dash-text-light);
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        /* Filters Section */
+        .filters-bar {
+            background: var(--dash-card);
+            border: 1px solid var(--dash-border);
+            padding: 1rem;
+            border-radius: 12px;
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            flex-wrap: wrap;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--dash-text-light);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid var(--dash-border);
+            border-radius: 8px;
+            font-family: inherit;
+            box-sizing: border-box;
+            background: rgba(255,255,255,0.03);
+            color: var(--dash-text);
+            transition: all 0.2s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--dash-primary);
+            background: rgba(255,255,255,0.05);
+            box-shadow: 0 0 0 3px rgba(0, 209, 255, 0.15);
+        }
+
+        .filter-select {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--dash-border);
+            border-radius: 8px;
+            font-family: inherit;
+            background: rgba(255,255,255,0.03);
+            color: var(--dash-text);
+            min-width: 150px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .filter-select:focus {
+            border-color: var(--dash-primary);
+            outline: none;
+        }
+        
+        .filter-select option {
+            background: #0f172a;
+            color: #f8fafc;
+        }
+
+        /* Cases Grid */
+        .cases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .case-card {
+            background: var(--dash-card);
+            border: 1px solid var(--dash-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .case-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at top right, rgba(0,209,255,0.05) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .case-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), var(--glow-primary);
+            border-color: rgba(0, 209, 255, 0.5);
+        }
+
+        .case-card:hover::before {
+            opacity: 1;
+        }
+
+        .case-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .case-id {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--dash-text);
+            margin: 0 0 0.25rem 0;
+        }
+
+        .case-date {
+            font-size: 0.8rem;
+            color: var(--dash-text-light);
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .status-badge {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .case-body {
+            flex: 1;
+        }
+
+        .case-type {
+            font-weight: 500;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .case-patient {
+            font-size: 0.85rem;
+            color: var(--dash-text-light);
+            margin: 0 0 1.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .case-footer {
+            border-top: 1px solid var(--dash-border);
+            padding-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-count {
+            font-size: 0.85rem;
+            color: var(--dash-text-light);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-view {
+            background: rgba(0, 209, 255, 0.05);
+            color: var(--dash-primary);
+            border: 1px solid rgba(0, 209, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .case-card:hover .btn-view {
+            background: var(--dash-primary);
+            color: #020617;
+            border-color: var(--dash-primary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--dash-card);
+            border: 1px dashed rgba(255,255,255,0.15);
+            border-radius: 16px;
+            grid-column: 1 / -1;
+            display: none;
+            backdrop-filter: blur(10px);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: rgba(255,255,255,0.2);
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            margin: 0 0 0.5rem 0;
+            color: var(--dash-text);
+        }
+
+        .empty-state p {
+            color: var(--dash-text-light);
+            margin: 0;
+        }
+
+        /* Review Summary Styles */
+        .review-summary {
+            border-radius: 16px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .review-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: background 0.2s;
+        }
+
+        .review-item:last-child {
+            border-bottom: none;
+        }
+
+        .review-item:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .review-label {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .review-value {
+            color: #fff;
+            font-weight: 600;
+            font-size: 1rem;
+            text-align: right;
+        }
+
+        .review-value:empty::after {
+            content: 'Not specified';
+            color: rgba(255, 255, 255, 0.2);
+            font-weight: 400;
+            font-style: italic;
+        }
+    </style>
+
+    <style>
+        .client-layout {
+            display: flex;
+            min-height: 100vh;
+            background: #020617;
+        }
+
+        .client-sidebar {
+            width: 260px;
+            background: rgba(15, 23, 42, 0.9);
+            border-right: 1px solid rgba(255, 255, 255, 0.07);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+
+        .client-brand {
+            padding: 1.75rem 1.5rem;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .client-brand img {
+            height: 30px;
+            border-radius: 6px;
+        }
+
+        .client-user {
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .client-nav {
+            padding: 1.25rem 1rem;
+            flex: 1;
+        }
+
+        .client-nav a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.85rem 1.25rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border-radius: 12px;
+            margin-bottom: 0.35rem;
+        }
+
+        .client-nav a:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #00D1FF;
+        }
+
+        .client-nav a.active {
+            background: #00D1FF;
+            color: #020617;
+            font-weight: 800;
+            box-shadow: 0 4px 15px rgba(0, 209, 255, 0.3);
+        }
+
+        .client-nav a i {
+            font-size: 1.1rem;
+            width: 22px;
+            text-align: center;
+        }
+
+        .client-main {
+            flex: 1;
+            margin-left: 260px;
+            padding: 2.5rem;
+            width: calc(100% - 260px);
+            box-sizing: border-box;
+        }
+
+        /* ============================================================
+           MOBILE RESPONSIVE — Client Dashboard
+           ============================================================ */
+        @media (max-width: 900px) {
+            /* Stack layout vertically */
+            .client-layout {
+                flex-direction: column !important;
+            }
+
+            /* Sidebar becomes a top bar */
+            .client-sidebar {
+                width: 100% !important;
+                height: auto !important;
+                position: relative !important;
+                padding: 0.75rem 1rem !important;
+                border-right: none !important;
+                border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+            }
+
+            /* Hide the logo text on mobile */
+            .client-brand {
+                display: none !important;
+            }
+
+            /* User info bar: avatar + name on left, logout button on right */
+            .client-user {
+                display: flex !important;
+                align-items: center !important;
+                gap: 0.75rem !important;
+                margin-bottom: 0.75rem !important;
+                padding: 0 !important;
+            }
+
+            /* Nav links become horizontal scrollable pills */
+            .client-nav {
+                display: flex !important;
+                flex-direction: row !important;
+                gap: 0.4rem !important;
+                overflow-x: auto !important;
+                white-space: nowrap !important;
+                padding: 0 !important;
+                scrollbar-width: none !important;
+                -ms-overflow-style: none !important;
+            }
+
+            .client-nav::-webkit-scrollbar { display: none; }
+
+            .client-nav a {
+                flex-shrink: 0 !important;
+                padding: 0.5rem 1rem !important;
+                margin: 0 !important;
+                display: inline-flex !important;
+                font-size: 0.85rem !important;
+                border-radius: 8px !important;
+            }
+
+            /* Hide the bottom action bar in sidebar (Website link + Logout) */
+            .client-sidebar > div:last-child {
+                display: none !important;
+            }
+
+            /* Main content takes full width */
+            .client-main {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding: 1rem !important;
+                box-sizing: border-box !important;
+            }
+
+            /* Cases grid: 1 column */
+            .cases-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Filters: stacked */
+            .filters-bar {
+                flex-direction: column !important;
+                gap: 0.75rem !important;
+            }
+
+            .search-box {
+                min-width: unset !important;
+                width: 100% !important;
+            }
+
+            /* Page header: stacked */
+            .page-header {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-title h1 {
+                font-size: 1.4rem !important;
+            }
+
+            .dash-avatar {
+                width: 34px !important;
+                height: 34px !important;
+                font-size: 0.85rem !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="client-layout">
+        <!-- Sidebar -->
+        <aside class="client-sidebar">
+            <a href="index.html" class="client-brand">
+                <img src="images/logo.png" alt="Kael Logo" onerror="this.style.display='none';">
+                KAEL PORTAL
+            </a>
+
+            <div class="client-user">
+                <div class="dash-avatar" id="sidebar-avatar">--</div>
+                <div style="overflow: hidden;">
+                    <p class="dash-user-name" id="sidebar-name"
+                        style="font-weight: 600; margin: 0; font-size: 0.95rem; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
+                        Loading...</p>
+                    <p class="dash-user-clinic" id="sidebar-clinic"
+                        style="font-size: 0.8rem; color: var(--dash-text-light); margin: 0; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
+                        Clinic</p>
+                </div>
+            </div>
+
+            <nav class="client-nav">
+                <a href="#" onclick="showClientTab('archive');return false;" class="active" id="nav-archive"><i
+                        class="fa-solid fa-folder-open"></i>
+                    My Cases</a>
+                <a href="#" onclick="showClientTab('billing');return false;" id="nav-billing"><i
+                        class="fa-solid fa-file-invoice-dollar"></i> Invoices & Billing</a>
+                <a href="#" onclick="showClientTab('submit');return false;" id="nav-submit"><i
+                        class="fa-solid fa-plus-circle"></i> Submit New Case</a>
+            </nav>
+
+            <div style="padding:1rem;border-top:1px solid rgba(255,255,255,0.07);display:flex;gap:0.5rem;">
+                <a href="index.html"
+                    style="flex:1;display:flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.75rem;background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.6);text-decoration:none;font-weight:600;border-radius:10px;font-size:0.85rem;transition:all 0.3s;border:1px solid rgba(255,255,255,0.08);">
+                    <i class="fa-solid fa-house"></i> Website
+                </a>
+                <button onclick="clientLogout()"
+                    style="flex:1;display:flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.75rem;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.2);color:#f87171;font-weight:600;cursor:pointer;border-radius:10px;font-size:0.85rem;transition:all 0.3s;">
+                    <i class="fa-solid fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="client-main">
+
+
+            <div id="archive-view">
+                <div class="page-header">
+                    <div class="page-title">
+                        <h1>My Case Archive</h1>
+                        <p>Access, track, and download all your completed digital designs.</p>
+                    </div>
+                    <div
+                        style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:0.75rem 1.5rem;display:flex;gap:1.5rem;">
+                        <div style="text-align:center;">
+                            <span id="total-cases-stat"
+                                style="display:block;font-size:1.4rem;font-weight:800;color:#00D1FF;">0</span>
+                            <span
+                                style="font-size:0.7rem;text-transform:uppercase;color:rgba(255,255,255,0.4);font-weight:700;letter-spacing:1px;">Total</span>
+                        </div>
+                        <div style="width:1px;background:rgba(255,255,255,0.08);"></div>
+                        <div style="text-align:center;">
+                            <span id="this-month-stat"
+                                style="display:block;font-size:1.4rem;font-weight:800;color:#34d399;">0</span>
+                            <span
+                                style="font-size:0.7rem;text-transform:uppercase;color:rgba(255,255,255,0.4);font-weight:700;letter-spacing:1px;">This
+                                Month</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="filters-bar">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="searchInput" placeholder="Search by Case ID or Patient Name...">
+                    </div>
+                    <select class="filter-select" id="typeFilter">
+                        <option value="all">All Types</option>
+                        <option value="crown">Crowns & Bridges</option>
+                        <option value="veneer">Veneers</option>
+                        <option value="implant">Implant Abutments</option>
+                        <option value="splint">Splints / Guards</option>
+                    </select>
+                    <select class="filter-select" id="dateFilter">
+                        <option value="all">All Time</option>
+                        <option value="30">Last 30 Days</option>
+                        <option value="90">Last 90 Days</option>
+                        <option value="year">This Year</option>
+                    </select>
+                    <a href="#" onclick="showClientTab('submit');return false;" class="btn btn-primary"
+                        style="margin-left: auto; text-decoration: none;">
+                        <i class="fa-solid fa-plus"></i> Submit New Case
+                    </a>
+                </div>
+
+                <!-- Cases Grid -->
+                <div class="cases-grid" id="casesGrid">
+                    <!-- Dynamically populated -->
+                </div>
+
+                <!-- Empty State -->
+                <div class="empty-state" id="emptyState">
+                    <i class="fa-solid fa-folder-open"></i>
+                    <h3>No cases found</h3>
+                    <p>Try adjusting your search or filters.</p>
+                </div>
+
+            </div> <!-- End of archive-view -->
+
+            <!-- BILLING TAB VIEW -->
+            <div id="billing-view" style="display:none;">
+                <div class="page-header">
+                    <div class="page-title">
+                        <h1>Invoices & Billing</h1>
+                        <p>A full breakdown of every invoice linked to your cases.</p>
+                    </div>
+                </div>
+
+                <!-- Balance Overview -->
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;">
+                    <div
+                        style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:1.25rem 1.5rem;backdrop-filter:blur(12px);">
+                        <div
+                            style="font-size:0.72rem;text-transform:uppercase;color:rgba(255,255,255,0.4);font-weight:700;margin-bottom:0.5rem;letter-spacing:1px;">
+                            Unbilled Work</div>
+                        <div id="bal-unbilled" style="font-size:1.6rem;font-weight:800;color:rgba(255,255,255,0.6);">
+                            $0.00</div>
+                    </div>
+                    <div
+                        style="background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2);border-radius:16px;padding:1.25rem 1.5rem;">
+                        <div
+                            style="font-size:0.72rem;text-transform:uppercase;color:rgba(255,255,255,0.4);font-weight:700;margin-bottom:0.5rem;letter-spacing:1px;">
+                            Unpaid Balance</div>
+                        <div id="bal-unpaid" style="font-size:1.6rem;font-weight:800;color:#f87171;">$0.00</div>
+                    </div>
+                    <div
+                        style="background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);border-radius:16px;padding:1.25rem 1.5rem;">
+                        <div
+                            style="font-size:0.72rem;text-transform:uppercase;color:rgba(255,255,255,0.4);font-weight:700;margin-bottom:0.5rem;letter-spacing:1px;">
+                            Total Paid</div>
+                        <div id="bal-paid" style="font-size:1.6rem;font-weight:800;color:#34d399;">$0.00</div>
+                    </div>
+                    <div
+                        style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:1.25rem 1.5rem;">
+                        <div
+                            style="font-size:0.72rem;text-transform:uppercase;color:rgba(255,255,255,0.4);font-weight:700;margin-bottom:0.5rem;letter-spacing:1px;">
+                            Last Payment</div>
+                        <div id="bal-last" style="font-size:1rem;font-weight:700;color:#fff;">—</div>
+                    </div>
+                </div>
+
+                <!-- Overdue alert -->
+                <div id="overdue-alert"
+                    style="display:none;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem;color:#f87171;font-weight:600;font-size:0.9rem;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> You have overdue invoices. Please contact Kael
+                    Designer to arrange payment.
+                </div>
+
+                <!-- Invoice List -->
+                <div
+                    style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:18px;overflow:hidden;">
+                    <div
+                        style="padding:1.25rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.08);font-family:'Outfit',sans-serif;font-weight:700;font-size:1rem;color:#fff;">
+                        Invoice History</div>
+                    <div id="client-invoice-list" style="padding:0.5rem 0;"></div>
+                </div>
+            </div>
+
+            <!-- SUBMIT CASE TAB VIEW -->
+            <div id="submit-view" style="display:none;">
+                <div class="page-header">
+                    <div class="page-title">
+                        <h1>Submit New Case</h1>
+                        <p>Complete the steps below to start your new precision design work.</p>
+                    </div>
+                </div>
+
+                <div class="submission-container"
+                    style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); box-shadow: none;">
+                    <div class="submission-header"
+                        style="background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.08);">
+                        <ul class="step-indicator" style="max-width: 800px;">
+                            <li class="step-item active" data-step="1">
+                                <span class="step-num">1</span>
+                                <span class="step-label">Type</span>
+                            </li>
+                            <li class="step-item" data-step="2">
+                                <span class="step-num">2</span>
+                                <span class="step-label">Details</span>
+                            </li>
+                            <li class="step-item" data-step="3">
+                                <span class="step-num">3</span>
+                                <span class="step-label">Scans</span>
+                            </li>
+                            <li class="step-item" data-step="4">
+                                <span class="step-num">4</span>
+                                <span class="step-label">Priority</span>
+                            </li>
+                            <li class="step-item" data-step="5">
+                                <span class="step-num">5</span>
+                                <span class="step-label">Review</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="submission-body" style="background: transparent;">
+                        <!-- Sidebar: Score -->
+                        <div class="submission-sidebar"
+                            style="background: rgba(15, 23, 42, 0.5); border-right: 1px solid rgba(255,255,255,0.08); width: 240px; padding: 1.5rem;">
+                            <div class="case-score-card"
+                                style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); color: #fff;">
+                                <h3 style="color: #fff; opacity: 0.8; font-size: 0.85rem;">CASE COMPLETENESS</h3>
+                                <div class="score-ring" style="width: 100px;">
+                                    <svg viewBox="0 0 36 36" class="circular-chart">
+                                        <path class="circle-bg" style="stroke: rgba(255,255,255,0.1);"
+                                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                        <path class="circle" id="score-circle" stroke-dasharray="0, 100"
+                                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                            stroke="#EF4444" />
+                                        <text x="18" y="20.35" class="percentage" id="score-text"
+                                            style="fill: #fff;">0%</text>
+                                    </svg>
+                                </div>
+                                <p class="score-message" id="score-message" style="font-size: 0.75rem;">Start filling
+                                    details.</p>
+                                <div class="smart-warnings" id="smart-warnings"></div>
+                            </div>
+                        </div>
+
+                        <!-- Form Area -->
+                        <div class="submission-form-area" style="padding: 2rem;">
+                            <form id="smart-case-form" onsubmit="return false;">
+                                <!-- Step 1: Type -->
+                                <div class="form-step active" id="step-1">
+                                    <h3
+                                        style="color: #fff; font-family: 'Outfit', sans-serif; font-size: 1.25rem; margin-bottom: 1.5rem; border: none; padding: 0;">
+                                        What are we designing?</h3>
+                                    <div class="radio-grid" style="grid-template-columns: repeat(3, 1fr);">
+                                        <label class="radio-card">
+                                            <input type="radio" name="case_type" value="Crown" class="score-input">
+                                            <span class="card-content"
+                                                style="background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6);">
+                                                <i class="fa-solid fa-tooth"></i> Crown
+                                            </span>
+                                        </label>
+                                        <label class="radio-card">
+                                            <input type="radio" name="case_type" value="Bridge" class="score-input">
+                                            <span class="card-content"
+                                                style="background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6);">
+                                                <i class="fa-solid fa-teeth"></i> Bridge
+                                            </span>
+                                        </label>
+                                        <label class="radio-card">
+                                            <input type="radio" name="case_type" value="Veneers" class="score-input">
+                                            <span class="card-content"
+                                                style="background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6);">
+                                                <i class="fa-solid fa-face-smile"></i> Veneers
+                                            </span>
+                                        </label>
+                                        <label class="radio-card">
+                                            <input type="radio" name="case_type" value="All-on-X" class="score-input">
+                                            <span class="card-content"
+                                                style="background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6);">
+                                                <i class="fa-solid fa-teeth-open"></i> All-on-X
+                                            </span>
+                                        </label>
+                                        <label class="radio-card">
+                                            <input type="radio" name="case_type" value="Implant Prosthetics"
+                                                class="score-input">
+                                            <span class="card-content"
+                                                style="background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6);">
+                                                <i class="fa-solid fa-bone"></i> Implant
+                                            </span>
+                                        </label>
+                                        <label class="radio-card">
+                                            <input type="radio" name="case_type" value="Wax-up Esthetique"
+                                                class="score-input">
+                                            <span class="card-content"
+                                                style="background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6);">
+                                                <i class="fa-solid fa-magic"></i> Wax-up
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Step 2: Details -->
+                                <div class="form-step" id="step-2">
+                                    <h3
+                                        style="color: #fff; font-family: 'Outfit', sans-serif; font-size: 1.25rem; margin-bottom: 1.5rem; border: none; padding: 0;">
+                                        Case Details</h3>
+
+                                    <div class="form-group">
+                                        <label style="color: #00D1FF; font-weight: 700;">Patient Name / Case Label <span
+                                                style="color: #EF4444;">*</span></label>
+                                        <input type="text" id="patient_name" name="patient_name"
+                                            placeholder="Enter patient name or unique case identifier"
+                                            class="form-control score-input" required
+                                            style="background: rgba(255,255,255,0.05); border-color: rgba(0, 209, 255, 0.2); color: #fff; font-size: 1.1rem; border-width: 2px;">
+                                        <p
+                                            style="color: rgba(255,255,255,0.4); font-size: 0.75rem; margin-top: 0.25rem;">
+                                            Avoid full sensitive patient data if not necessary for privacy.</p>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label style="color: rgba(255,255,255,0.6);">Tooth/Area Selection</label>
+                                        <input type="text" name="tooth_area" placeholder="e.g., #11, #12, #21, #22"
+                                            class="form-control score-input"
+                                            style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: #fff;">
+                                    </div>
+                                    <div class="form-group" style="margin-top: 1.5rem;">
+                                        <label style="color: rgba(255,255,255,0.6); display: block; margin-bottom: 0.5rem;">Material Selection</label>
+                                        <div class="radio-grid" style="grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
+                                            <label class="radio-card" style="margin:0;">
+                                                <input type="radio" name="material" value="Zirconia" class="score-input">
+                                                <span class="card-content" style="background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); padding: 0.75rem; min-height: auto;">
+                                                    Zirconia
+                                                </span>
+                                            </label>
+                                            <label class="radio-card" style="margin:0;">
+                                                <input type="radio" name="material" value="E.max" class="score-input">
+                                                <span class="card-content" style="background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); padding: 0.75rem; min-height: auto;">
+                                                    E.max
+                                                </span>
+                                            </label>
+                                            <label class="radio-card" style="margin:0;">
+                                                <input type="radio" name="material" value="PMMA" class="score-input">
+                                                <span class="card-content" style="background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); padding: 0.75rem; min-height: auto;">
+                                                    PMMA
+                                                </span>
+                                            </label>
+                                            <label class="radio-card" style="margin:0;">
+                                                <input type="radio" name="material" value="Titanium" class="score-input">
+                                                <span class="card-content" style="background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); padding: 0.75rem; min-height: auto;">
+                                                    Titanium
+                                                </span>
+                                            </label>
+                                            <label class="radio-card" style="margin:0;">
+                                                <input type="radio" name="material" value="Composite" class="score-input">
+                                                <span class="card-content" style="background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); padding: 0.75rem; min-height: auto;">
+                                                    Composite
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
+                                        <label style="color: rgba(255,255,255,0.6); display: block; margin-bottom: 0.5rem;">Margin Details</label>
+                                        <div class="radio-grid" style="grid-template-columns: repeat(2, 1fr); gap: 0.75rem;">
+                                            <label class="radio-card" style="margin:0;">
+                                                <input type="radio" name="margin" value="Standard" class="score-input">
+                                                <span class="card-content" style="background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); padding: 0.75rem; min-height: auto;">
+                                                    Standard
+                                                </span>
+                                            </label>
+                                            <label class="radio-card" style="margin:0;">
+                                                <input type="radio" name="margin" value="Heavy Chamfer" class="score-input">
+                                                <span class="card-content" style="background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); padding: 0.75rem; min-height: auto;">
+                                                    Heavy Chamfer
+                                                </span>
+                                            </label>
+                                            <label class="radio-card" style="margin:0;">
+                                                <input type="radio" name="margin" value="Shoulder" class="score-input">
+                                                <span class="card-content" style="background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); padding: 0.75rem; min-height: auto;">
+                                                    Shoulder
+                                                </span>
+                                            </label>
+                                            <label class="radio-card" style="margin:0;">
+                                                <input type="radio" name="margin" value="Feather Edge" class="score-input">
+                                                <span class="card-content" style="background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); padding: 0.75rem; min-height: auto;">
+                                                    Feather Edge
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label style="color: rgba(255,255,255,0.6);">Occlusion Notes</label>
+                                        <input type="text" name="occlusion"
+                                            placeholder="e.g., Light contact, tight contact..."
+                                            class="form-control score-input"
+                                            style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: #fff;">
+                                    </div>
+                                    <div class="form-group">
+                                        <label style="color: rgba(255,255,255,0.6);">Special Instructions</label>
+                                        <textarea name="instructions" rows="2"
+                                            placeholder="Any specific design requests?" class="form-control"
+                                            style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: #fff;"></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Step 3: Files -->
+                                <div class="form-step" id="step-3">
+                                    <h3
+                                        style="color: #fff; font-family: 'Outfit', sans-serif; font-size: 1.25rem; margin-bottom: 1.5rem; border: none; padding: 0;">
+                                        Upload Scans</h3>
+                                    <div class="upload-zone" id="upload-zone"
+                                        style="background: rgba(0, 209, 255, 0.05); border: 2px dashed rgba(0, 209, 255, 0.3); padding: 2rem;">
+                                        <i class="fa-solid fa-cloud-arrow-up"
+                                            style="font-size: 1.5rem; color: #00D1FF; margin-bottom: 0.5rem;"></i>
+                                        <h4 style="color: #fff; font-size: 1rem;">Drag & Drop files here</h4>
+                                        <p style="color: rgba(255,255,255,0.4); font-size: 0.8rem;">STL / PLY / DICOM
+                                        </p>
+                                        <input type="file" id="file-upload" multiple class="d-none score-input"
+                                            accept=".stl,.ply,.dcm,.jpg,.png">
+                                        <button type="button" class="btn btn-outline mt-3"
+                                            style="color: #00D1FF; border-color: #00D1FF; font-size: 0.85rem;"
+                                            onclick="document.getElementById('file-upload').click()">Browse
+                                            Files</button>
+                                        <div id="file-list" class="file-list mt-3"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Step 4: Priority -->
+                                <div class="form-step" id="step-4">
+                                    <h3
+                                        style="color: #fff; font-family: 'Outfit', sans-serif; font-size: 1.25rem; margin-bottom: 1.5rem; border: none; padding: 0;">
+                                        Case Priority</h3>
+                                    <div class="radio-grid">
+                                        <label class="radio-card">
+                                            <input type="radio" name="priority" value="Standard" checked
+                                                class="score-input">
+                                            <span class="card-content"
+                                                style="background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6);">
+                                                <i class="fa-regular fa-clock"></i> Standard (48h)
+                                            </span>
+                                        </label>
+                                        <label class="radio-card">
+                                            <input type="radio" name="priority" value="Express" class="score-input">
+                                            <span class="card-content"
+                                                style="background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6);">
+                                                <i class="fa-solid fa-bolt" style="color: #F59E0B;"></i> Express (24h)
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div class="form-group mt-4">
+                                        <label style="color: rgba(255,255,255,0.6);">Target Deadline (Optional)</label>
+                                        <input type="date" name="deadline" class="form-control score-input"
+                                            style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: #fff;">
+                                    </div>
+                                </div>
+
+                                <!-- Step 5: Review -->
+                                <div class="form-step" id="step-5">
+                                    <h3
+                                        style="color: #fff; font-family: 'Outfit', sans-serif; font-size: 1.25rem; margin-bottom: 1.5rem; border: none; padding: 0;">
+                                        Review & Submit</h3>
+                                    <div class="review-summary" id="review-summary"
+                                        style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); color: #fff;">
+                                    </div>
+                                    <div class="success-message" id="success-message"
+                                        style="display: none; padding: 1rem;">
+                                        <div class="success-icon" style="font-size: 3rem; color: #10B981;"><i
+                                                class="fa-solid fa-check-circle"></i></div>
+                                        <h4 style="color: #fff;">Case Submitted!</h4>
+                                        <p style="color: rgba(255,255,255,0.6);">Our designers are starting work.</p>
+                                        <button type="button" class="btn btn-primary mt-4"
+                                            onclick="showClientTab('archive')">Back to My Cases</button>
+                                    </div>
+                                </div>
+
+                                <!-- Nav -->
+                                <div class="form-navigation" id="form-navigation"
+                                    style="border-top: 1px solid rgba(255,255,255,0.08); margin-top: 1.5rem; padding-top: 1.5rem;">
+                                    <button type="button" class="btn btn-outline" id="prev-btn"
+                                        style="display: none; color: #fff; border-color: rgba(255,255,255,0.2);"
+                                        onclick="changeStep(-1)">Back</button>
+                                    <button type="button" class="btn btn-primary ml-auto" id="next-btn"
+                                        onclick="changeStep(1)">Next Step</button>
+                                    <button type="button" class="btn btn-success ml-auto" id="submit-btn"
+                                        style="display: none; background: #10B981;" onclick="submitCase()">Submit
+                                        Case</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Client Invoice Detail Modal -->
+            <div id="client-inv-modal"
+                style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);z-index:200;align-items:center;justify-content:center;"
+                onclick="if(event.target===this)this.style.display='none'">
+                <div
+                    style="background:rgba(15,23,42,0.95);border:1px solid rgba(255,255,255,0.1);border-radius:24px;max-width:600px;width:95%;max-height:90vh;overflow-y:auto;padding:0;backdrop-filter:blur(20px);box-shadow:0 25px 60px rgba(0,0,0,0.6);">
+                    <div
+                        style="padding:1.25rem 1.75rem;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:rgba(15,23,42,0.98);z-index:10;border-radius:24px 24px 0 0;">
+                        <div>
+                            <h3 id="cim-id"
+                                style="margin:0;color:#00D1FF;font-size:1.1rem;font-family:'Outfit',sans-serif;font-weight:800;">
+                            </h3>
+                            <p id="cim-period"
+                                style="margin:0.3rem 0 0;font-size:0.82rem;color:rgba(255,255,255,0.45);"></p>
+                        </div>
+                        <div style="display:flex;gap:0.5rem;align-items:center;">
+                            <div id="cim-badge"></div>
+                            <span onclick="document.getElementById('client-inv-modal').style.display='none'"
+                                style="cursor:pointer;font-size:1.75rem;color:rgba(255,255,255,0.3);line-height:1;transition:color 0.2s;"
+                                onmouseover="this.style.color='#f87171'"
+                                onmouseout="this.style.color='rgba(255,255,255,0.3)'">&times;</span>
+                        </div>
+                    </div>
+                    <div style="padding:1.5rem 1.75rem;">
+                        <!-- Case breakdown -->
+                        <div style="margin-bottom:1rem;">
+                            <h5
+                                style="margin:0 0 0.75rem;font-size:0.75rem;text-transform:uppercase;color:rgba(255,255,255,0.4);font-weight:700;letter-spacing:1px;">
+                                Case Breakdown</h5>
+                            <div id="cim-items"
+                                style="border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:0.5rem 0.75rem;">
+                            </div>
+                            <div
+                                style="display:flex;justify-content:space-between;font-weight:800;padding:0.85rem 1rem;background:rgba(0,209,255,0.08);border:1px solid rgba(0,209,255,0.15);border-radius:14px;margin-top:0.75rem;">
+                                <span>Total</span><span id="cim-total" style="color:#00D1FF;"></span>
+                            </div>
+                        </div>
+                        <!-- Due date notice -->
+                        <div id="cim-due-notice" style="margin-bottom:1rem;"></div>
+                        <!-- Quick acknowledgment -->
+                        <div style="display:flex;gap:0.75rem;margin-bottom:1.25rem;" id="cim-ack-area">
+                            <button onclick="clientAck('received')"
+                                style="flex:1;padding:0.75rem;background:rgba(52,211,153,0.1);color:#34d399;border:1px solid rgba(52,211,153,0.25);border-radius:12px;cursor:pointer;font-weight:700;font-size:0.85rem;transition:all 0.3s;">
+                                <i class="fa-solid fa-inbox"></i> Received
+                            </button>
+                            <button onclick="clientAck('will_pay')"
+                                style="flex:1;padding:0.75rem;background:rgba(0,102,255,0.1);color:#60a5fa;border:1px solid rgba(0,102,255,0.25);border-radius:12px;cursor:pointer;font-weight:700;font-size:0.85rem;transition:all 0.3s;">
+                                <i class="fa-solid fa-clock"></i> Will Pay
+                            </button>
+                        </div>
+                        <!-- Messages -->
+                        <div style="border:1px solid rgba(255,255,255,0.08);border-radius:14px;overflow:hidden;">
+                            <div
+                                style="padding:0.75rem 1rem;background:rgba(255,255,255,0.03);border-bottom:1px solid rgba(255,255,255,0.08);font-size:0.8rem;font-weight:700;color:rgba(255,255,255,0.6);">
+                                <i class="fa-solid fa-message"></i> Billing Messages
+                            </div>
+                            <div id="cim-messages"
+                                style="padding:0.75rem;min-height:80px;max-height:160px;overflow-y:auto;"></div>
+                            <div
+                                style="padding:0.65rem;border-top:1px solid rgba(255,255,255,0.08);display:flex;gap:0.5rem;background:rgba(255,255,255,0.02);">
+                                <input type="text" id="cim-msg-input" placeholder="Ask about this invoice..."
+                                    style="flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.6rem 1rem;color:#fff;font-family:'Inter',sans-serif;font-size:0.85rem;"
+                                    onkeydown="if(event.key==='Enter')clientInvMsg()">
+                                <button onclick="clientInvMsg()"
+                                    style="padding:0.6rem 1rem;background:linear-gradient(135deg,#0066FF,#00D1FF);color:#fff;border:none;border-radius:10px;cursor:pointer;"><i
+                                        class="fa-solid fa-paper-plane"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- end client-inv-modal-content -->
+            </div> <!-- end client-inv-modal -->
+
+            <!-- Premium Client Case Detail Modal (Ultra-Premium Redesign) -->
+            <div id="client-case-modal" class="modal" onclick="if(event.target===this)this.style.display='none'">
+                <div class="modal-content"
+                    style="max-width:850px; max-height:92vh; overflow-y:auto; padding:0; border-radius:32px; border:1px solid rgba(255,255,255,0.1); box-shadow: 0 50px 100px rgba(0,0,0,0.8); background:#0f172a;">
+                    <!-- Header: Indigo/Navy Gradient -->
+                    <div
+                        style="background: rgba(15,23,42,0.95); padding: 2.5rem 2rem; color: white; position: sticky; top:0; z-index:100; display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(15px);">
+                        <div>
+                            <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom: 0.5rem;">
+                                <span id="ccm-id"
+                                    style="font-family:'Space Grotesk',sans-serif; font-size:1.75rem; font-weight:700; letter-spacing:-1px; color:#00D1FF;"></span>
+                                <div id="ccm-status-badge"></div>
+                            </div>
+                            <p id="ccm-type" style="margin:0; font-size:1rem; opacity:0.8; font-weight:500;"></p>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:1.25rem;">
+                            <button class="btn btn-outline"
+                                style="border:1px solid rgba(255,255,255,0.2); background:transparent; color:white; font-size:0.8rem; padding:0.5rem 1.25rem; border-radius:12px; cursor:pointer;"
+                                onclick="document.getElementById('client-case-modal').style.display='none'">Dismiss</button>
+                            <span class="close-btn"
+                                onclick="document.getElementById('client-case-modal').style.display='none'"
+                                style="position:static; font-size:1.8rem; line-height:1; color:white; opacity:0.6; cursor:pointer;">&times;</span>
+                        </div>
+                    </div>
+
+                    <div style="padding:2.5rem;">
+                        <!-- Precision Status Timeline -->
+                        <div
+                            style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:24px; padding:2rem; margin-bottom:2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+                            <div
+                                style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                                <label
+                                    style="font-size:0.75rem; font-weight:800; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:1px;">Production
+                                    Phase & Live Status</label>
+                                <span style="font-size:0.75rem; color:#00D1FF; font-weight:700;">Secure Portal Live
+                                    Update</span>
+                            </div>
+                            <div id="ccm-progress"></div>
+                        </div>
+
+                        <!-- Financial Brief (If Available) -->
+                        <div id="ccm-price-box"
+                            style="margin-bottom:2rem; padding:1.25rem 1.75rem; background:linear-gradient(90deg, rgba(52,211,153,0.05), transparent); border-radius:20px; border:1px solid rgba(52,211,153,0.15); display:none; align-items:center; justify-content:space-between;">
+                            <div style="display:flex; align-items:center; gap:1rem;">
+                                <div
+                                    style="width:40px; height:40px; background:#34d399; color:white; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.1rem;">
+                                    <i class="fa-solid fa-receipt"></i>
+                                </div>
+                                <div>
+                                    <span
+                                        style="font-size:0.85rem; color:#34d399; font-weight:700; display:block;">Professional
+                                        Service Fee</span>
+                                    <span style="font-size:0.7rem; color:rgba(255,255,255,0.5); font-weight:600;">Linked to Invoice
+                                        for consolidated billing</span>
+                                </div>
+                            </div>
+                            <span id="ccm-price" style="font-size:1.5rem; font-weight:800; color:#34d399;"></span>
+                        </div>
+
+                        <!-- Asset Grid: Files & Communication -->
+                        <div style="display:grid; grid-template-columns: 1fr 1.2fr; gap:2rem;">
+                            <!-- Documentation Hub -->
+                            <div style="display:flex; flex-direction:column; gap:1.25rem;">
+                                <div
+                                    style="background:rgba(0, 209, 255, 0.05); border:1px solid rgba(0, 209, 255, 0.15); border-radius:24px; padding:1.5rem;">
+                                    <h5
+                                        style="margin:0 0 1rem; color:#00D1FF; font-size:0.9rem; font-weight:800; display:flex; align-items:center; gap:0.6rem;">
+                                        <i class="fa-solid fa-file-arrow-up"></i> SUBMITTED ASSETS
+                                    </h5>
+                                    <div id="ccm-client-files" style="display:flex; flex-direction:column; gap:0.5rem;">
+                                    </div>
+                                </div>
+
+                                <div
+                                    style="background:rgba(139, 92, 246, 0.05); border:1px solid rgba(139, 92, 246, 0.15); border-radius:24px; padding:1.5rem;">
+                                    <h5
+                                        style="margin:0 0 1rem; color:#a78bfa; font-size:0.9rem; font-weight:800; display:flex; align-items:center; gap:0.6rem;">
+                                        <i class="fa-solid fa-wand-magic-sparkles"></i> KAEL DESIGN OUTPUTS
+                                    </h5>
+                                    <div id="ccm-design-files" style="display:flex; flex-direction:column; gap:0.5rem;">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Clinical Dialogue Hub -->
+                            <div
+                                style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.08); border-radius:24px; display:flex; flex-direction:column; overflow:hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                                <div
+                                    style="padding:1.25rem 1.5rem; background:rgba(255,255,255,0.04); border-bottom:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; align-items:center;">
+                                    <h5 style="margin:0; font-size:0.9rem; color:#fff; font-weight:800;"><i
+                                            class="fa-solid fa-comments"></i> CLINICAL DIALOGUE</h5>
+                                    <span style="font-size:0.7rem; color:rgba(255,255,255,0.5); font-weight:700;">DIRECT TO LAB</span>
+                                </div>
+                                <div id="ccm-messages"
+                                    style="padding:1.5rem; height:280px; overflow-y:auto; background:transparent; display:flex; flex-direction:column; gap:1rem;">
+                                </div>
+                                <div style="padding:1.25rem; border-top:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.02);">
+                                    <div style="display:flex; gap:0.75rem; margin-bottom:1rem;">
+                                        <input type="text" id="ccm-msg-input" class="form-control"
+                                            placeholder="Type a message to our designers..."
+                                            style="border-radius:12px; padding:0.75rem 1.25rem; background:rgba(255,255,255,0.05); color:#fff; border:1px solid rgba(255,255,255,0.1);"
+                                            onkeydown="if(event.key==='Enter')clientSendMessage()">
+                                        <button class="btn btn-primary"
+                                            style="width:48px; height:48px; padding:0; display:flex; align-items:center; justify-content:center; border-radius:12px;"
+                                            onclick="clientSendMessage()">
+                                            <i class="fa-solid fa-paper-plane"></i>
+                                        </button>
+                                    </div>
+                                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                                        <button onclick="clientQuickAction('Design looks perfect! Proceed.')"
+                                            style="padding:0.4rem 0.8rem; font-size:0.72rem; border-radius:20px; border:1px solid rgba(16, 185, 129, 0.3); color:#34d399; background:rgba(16, 185, 129, 0.1); cursor:pointer; font-weight:600;">Proceed
+                                            to Finish</button>
+                                        <button onclick="clientQuickAction('Please adjust the contacts/occlusion.')"
+                                            style="padding:0.4rem 0.8rem; font-size:0.72rem; border-radius:20px; border:1px solid rgba(245, 158, 11, 0.3); color:#fbbf24; background:rgba(245, 158, 11, 0.1); cursor:pointer; font-weight:600;">Request
+                                            Adjustments</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main> <!-- end client-main -->
+    </div> <!-- end client-layout -->
+
+
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/supabase-file-handler.js"></script>
+    
+    <script src="js/kael-core.js"></script>
+    <script>
+        // Check Authentication
+        if (localStorage.getItem('kael_client_auth') !== 'true') {
+            window.location.href = 'client-login.html';
+        }
+
+        // Logout function
+        function clientLogout() {
+            localStorage.removeItem('kael_client_auth');
+            localStorage.removeItem('kael_client_email');
+            window.location.href = 'client-login.html';
+        }
+
+        // Toggle Form View
+        function toggleSubmitForm() {
+            const archiveView = document.getElementById('archive-view');
+            const submitView = document.getElementById('submit-case');
+            const filtersBar = document.querySelector('.filters-bar');
+
+            if (submitView.style.display === 'none') {
+                archiveView.style.display = 'none';
+                filtersBar.style.display = 'none';
+                submitView.style.display = 'block';
+            } else {
+                archiveView.style.display = 'block';
+                filtersBar.style.display = 'flex';
+                submitView.style.display = 'none';
+            }
+        }
+
+        // Update user display and cases dynamically
+        document.addEventListener('DOMContentLoaded', () => {
+            const clientName = localStorage.getItem('kael_client_name') || 'Logged In Client';
+            const clientEmail = localStorage.getItem('kael_client_email') || '';
+
+            let displayName = clientName;
+            let clinicName = 'Registered Clinic';
+            let initials = 'CL';
+
+            if (!localStorage.getItem('kael_client_name') && clientEmail) {
+                displayName = clientEmail.split('@')[0].replace('.', ' ');
+                displayName = displayName.replace(/\b\w/g, l => l.toUpperCase());
+            }
+
+            const clients = JSON.parse(localStorage.getItem('kael_clients') || '[]');
+            const client = clients.find(c => c.email === clientEmail);
+            if (client) {
+                clinicName = client.clinic || 'Registered Clinic';
+                displayName = client.name || displayName;
+            }
+
+            const parts = displayName.split(' ').filter(p => p.length > 0);
+            if (parts.length > 1) {
+                initials = (parts[0][0] + parts[1][0]).toUpperCase();
+            } else if (displayName.length > 0) {
+                initials = displayName.substring(0, 2).toUpperCase();
+            }
+
+            const nameDisplay = document.getElementById('sidebar-name');
+            const clinicDisplay = document.getElementById('sidebar-clinic');
+            const avatarDisplay = document.getElementById('sidebar-avatar');
+
+            if (nameDisplay) nameDisplay.textContent = displayName;
+            if (clinicDisplay) clinicDisplay.textContent = clinicName;
+            if (avatarDisplay) avatarDisplay.textContent = initials;
+
+            loadClientCases(clientEmail);
+
+            // Handle Deep Linking (from Admin or Emails)
+            const urlParams = new URLSearchParams(window.location.search);
+            const view = urlParams.get('view');
+            const caseId = urlParams.get('id');
+
+            if (view === 'case' && caseId) {
+                // Small delay to ensure cases are loaded
+                setTimeout(() => {
+                    openClientCase(caseId);
+                    // Clear params from URL without reload
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }, 500);
+            }
+        });
+
+        function loadClientCases(clientEmail) {
+            const grid = document.getElementById('casesGrid');
+            // Unify: show all cases from kael_cases that belong to this client
+            const allCases = kael_getCases().filter(c => c.clientEmail === clientEmail);
+
+            // Update stats
+            document.getElementById('total-cases-stat').textContent = allCases.length;
+
+            if (allCases.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="display:block;">
+                        <i class="fa-solid fa-folder-open"></i>
+                        <h3>No cases yet</h3>
+                        <p>Submit your first case to get started.</p>
+                    </div>`;
+                return;
+            }
+
+            grid.innerHTML = allCases.map(c => {
+                const fileCount = (c.clientFiles || c.files || []).length + (c.designFiles || []).length;
+                const hasDesign = (c.designFiles || []).length > 0;
+                return `
+                <div class="case-card" data-type="${c.type}" data-id="${c.id}" data-patient="${c.patient || ''}" onclick="openClientCase('${c.id}')" style="cursor:pointer; position: relative; border-top: 4px solid #00D1FF;">
+                    <div class="case-header">
+                        <div style="flex:1;">
+                            <div style="font-size: 0.7rem; color: #00D1FF; font-weight: 800; text-transform: uppercase; margin-bottom: 2px;">Patient / Case Label</div>
+                            <h3 class="case-id" style="font-size: 1.15rem; margin-bottom: 4px; color: #fff;">${c.patient || 'N/A'}</h3>
+                            <div style="display:flex; align-items:center; gap:0.75rem;">
+                                <span class="case-date" style="font-size: 0.75rem; opacity:0.6;"><i class="fa-solid fa-hashtag"></i> ${c.id}</span>
+                                <span class="case-date" style="font-size: 0.75rem; opacity:0.6;"><i class="fa-regular fa-calendar"></i> ${new Date(c.date).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                        ${kael_statusBadgeHtml(c.status)}
+                    </div>
+                    <div class="case-body" style="margin-top: 1rem;">
+                        <p class="case-type" style="font-weight: 700; color: #fff; background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px; display: inline-block;">${c.type} · ${c.tooth || ''}</p>
+                        ${kael_statusProgressHtml(c.status)}
+                    </div>
+                    <div class="case-footer" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 0.75rem; margin-top: 0.75rem;">
+                        <span class="file-count"><i class="fa-solid fa-paperclip"></i> ${fileCount} file${fileCount !== 1 ? 's' : ''}</span>
+                        <span class="btn-view" style="color: #00D1FF;">Open Details <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>`;
+            }).join('');
+
+            window.cards = document.querySelectorAll('.case-card');
+        }
+
+        let _clientCaseId = null;
+        function openClientCase(caseId) {
+            const c = kael_findCase(caseId);
+            if (!c) return;
+            _clientCaseId = caseId;
+
+            document.getElementById('ccm-id').textContent = c.patient || c.id;
+            document.getElementById('ccm-status-badge').innerHTML = kael_statusBadgeHtml(c.status);
+            document.getElementById('ccm-type').textContent = `${c.id} · ${c.type}` + (c.tooth ? ' · ' + c.tooth : '');
+            document.getElementById('ccm-progress').innerHTML = kael_statusProgressHtml(c.status);
+
+            const cf = c.clientFiles || c.files || [];
+            const ccmCF = document.getElementById('ccm-client-files');
+            if (cf.length > 0) {
+                ccmCF.innerHTML = cf.map(f => {
+                    // f may be a string (old) or an object {name, url}
+                    const name = typeof f === 'object' ? f.name : f;
+                    const url  = typeof f === 'object' ? f.url  : null;
+                    const isLocal = url && (url.includes('localhost:5000') || url.includes('127.0.0.1'));
+                    const linkAttr = url
+                        ? `href="${url}" ${isLocal ? 'download' : 'target="_blank" rel="noopener noreferrer"'}`
+                        : `href="#" onclick="alert('File not available for download — only the filename was saved.');return false;"`;
+                    return `
+                    <div style="padding:0.35rem 0;border-bottom:1px solid rgba(0,209,255,0.1);display:flex;justify-content:space-between;align-items:center;">
+                        <span style="color:#f8fafc;word-break:break-all;"><i class="fa-solid fa-file-medical" style="color:#0ea5e9;"></i> ${name}</span>
+                        <a ${linkAttr} style="color:#0ea5e9;margin-left:0.75rem;flex-shrink:0;" title="Download"><i class="fa-solid fa-download"></i></a>
+                    </div>`;
+                }).join('');
+            } else {
+                ccmCF.innerHTML = '<p style="color:#94a3b8;font-size:0.78rem;">No files uploaded.</p>';
+            }
+
+            const df = c.designFiles || [];
+            const ccmDF = document.getElementById('ccm-design-files');
+            if (df.length > 0) {
+                ccmDF.innerHTML = df.map(f => {
+                    const name = typeof f === 'object' ? f.name : f;
+                    const url  = typeof f === 'object' ? f.url  : null;
+                    const linkAttr = url
+                        ? `href="${url}" target="_blank" rel="noopener noreferrer"`
+                        : `href="#" onclick="alert('File not available for download — only the filename was saved. Ask the admin to re-upload via the updated system.');return false;"`;
+                    return `
+                    <div style="padding:0.35rem 0;border-bottom:1px solid rgba(167,139,250,0.1);display:flex;justify-content:space-between;align-items:center;">
+                        <span style="color:#f8fafc;word-break:break-all;"><i class="fa-solid fa-cube" style="color:#a78bfa;"></i> ${name}</span>
+                        <a ${linkAttr} style="color:#a78bfa;margin-left:0.75rem;flex-shrink:0;" title="Download"><i class="fa-solid fa-download"></i></a>
+                    </div>`;
+                }).join('');
+            } else {
+                ccmDF.innerHTML = '<p style="color:#94a3b8;font-size:0.78rem;">Awaiting design files from Kael.</p>';
+            }
+
+            document.getElementById('ccm-messages').innerHTML = kael_messagesHtml(c.messages || [], 'client');
+
+            // Price display
+            const priceBox = document.getElementById('ccm-price-box');
+            if (c.price && c.price > 0) {
+                priceBox.style.display = 'flex';
+                document.getElementById('ccm-price').textContent = `$${parseFloat(c.price).toFixed(2)}`;
+            } else {
+                priceBox.style.display = 'none';
+            }
+
+            const msgDiv = document.getElementById('ccm-messages');
+            msgDiv.scrollTop = msgDiv.scrollHeight;
+
+            document.getElementById('client-case-modal').style.display = 'flex';
+        }
+
+        function clientSendMessage() {
+            const input = document.getElementById('ccm-msg-input');
+            const text = input.value.trim();
+            if (!text || !_clientCaseId) return;
+            kael_addMessage(_clientCaseId, 'client', text);
+            input.value = '';
+            const c = kael_findCase(_clientCaseId);
+            document.getElementById('ccm-messages').innerHTML = kael_messagesHtml(c.messages || [], 'client');
+            const msgDiv = document.getElementById('ccm-messages');
+            msgDiv.scrollTop = msgDiv.scrollHeight;
+        }
+
+        function clientQuickAction(text) {
+            const input = document.getElementById('ccm-msg-input');
+            input.value = text;
+            clientSendMessage();
+        }
+
+        // Simple filter logic
+        const searchInput = document.getElementById('searchInput');
+        const typeFilter = document.getElementById('typeFilter');
+        const emptyState = document.getElementById('emptyState');
+
+        function filterCases() {
+            if (!window.cards) return;
+            const searchTerm = searchInput.value.toLowerCase();
+            const typeValue = typeFilter.value.toLowerCase();
+            let visibleCount = 0;
+
+            window.cards.forEach(card => {
+                const id = card.getAttribute('data-id').toLowerCase();
+                const patient = card.getAttribute('data-patient').toLowerCase();
+                const type = card.getAttribute('data-type').toLowerCase();
+
+                const matchesSearch = id.includes(searchTerm) || patient.includes(searchTerm);
+                const matchesType = typeValue === 'all' || type.includes(typeValue);
+
+                if (matchesSearch && matchesType) {
+                    card.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        searchInput.addEventListener('input', filterCases);
+        typeFilter.addEventListener('change', filterCases);
+
+        // ── BILLING TAB ───────────────────────────────────────────────────────
+        function showClientTab(tab) {
+            const views = ['archive', 'billing', 'submit'];
+            const clientEmail = localStorage.getItem('kael_client_email');
+
+            views.forEach(v => {
+                const el = document.getElementById(`${v}-view`);
+                if (el) el.style.display = (tab === v) ? '' : 'none';
+
+                const nav = document.getElementById(`nav-${v}`);
+                if (nav) {
+                    if (tab === v) nav.classList.add('active');
+                    else nav.classList.remove('active');
+                }
+            });
+
+            // Handle filter bar visibility
+            const filtersBar = document.querySelector('.filters-bar');
+            if (filtersBar) {
+                filtersBar.style.display = (tab === 'archive') ? 'flex' : 'none';
+            }
+
+            if (tab === 'archive') loadClientCases(clientEmail);
+            if (tab === 'billing') loadClientBilling();
+            if (tab === 'submit') {
+                // Initialize submission form if needed
+                if (typeof calculateScore === 'function') calculateScore();
+            }
+        }
+
+        let _clientInvId = null;
+        function loadClientBilling() {
+            kael_checkOverdue();
+            const clientEmail = localStorage.getItem('kael_client_email') || '';
+            const bal = kael_getClientBalance(clientEmail);
+            document.getElementById('bal-unbilled').textContent = `$${bal.totalUnbilled.toFixed(2)}`;
+            document.getElementById('bal-unpaid').textContent = `$${bal.totalUnpaid.toFixed(2)}`;
+            document.getElementById('bal-paid').textContent = `$${bal.totalPaid.toFixed(2)}`;
+            document.getElementById('bal-last').textContent = bal.lastPayment
+                ? new Date(bal.lastPayment).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                : '—';
+            document.getElementById('overdue-alert').style.display = bal.overdueCount > 0 ? 'block' : 'none';
+
+            const invoices = kael_getInvoices().filter(i => i.clientEmail === clientEmail);
+            const list = document.getElementById('client-invoice-list');
+            if (invoices.length === 0) {
+                list.innerHTML = '<p style="padding:1.5rem;text-align:center;color:#94a3b8;font-size:0.88rem;">No invoices yet. Your invoices will appear here once generated by Kael Designer.</p>';
+                return;
+            }
+            list.innerHTML = invoices.map(inv => `
+                <div onclick="openClientInvoice('${inv.id}')" style="display:flex;align-items:center;justify-content:space-between;
+                    padding:0.85rem 1.25rem;border-bottom:1px solid #f1f5f9;cursor:pointer;transition:background 0.15s;"
+                    onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+                    <div>
+                        <div style="font-weight:700;color:#0ea5e9;font-size:0.88rem;">${inv.id}</div>
+                        <div style="font-size:0.78rem;color:#64748b;">${inv.period || inv.date} · ${(inv.caseItems || []).length} case${(inv.caseItems || []).length !== 1 ? 's' : ''}</div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:0.85rem;">
+                        <strong style="font-size:1rem;">$${inv.amount.toFixed(2)}</strong>
+                        ${kael_invStatusBadge(inv.status)}
+                        <i class="fa-solid fa-chevron-right" style="color:#94a3b8;font-size:0.75rem;"></i>
+                    </div>
+                </div>`).join('');
+        }
+
+        function openClientInvoice(invId) {
+            const inv = kael_findInvoice(invId);
+            if (!inv) return;
+            _clientInvId = invId;
+            document.getElementById('cim-id').textContent = inv.id;
+            document.getElementById('cim-period').textContent = `Period: ${inv.period || inv.date}`;
+            document.getElementById('cim-badge').innerHTML = kael_invStatusBadge(inv.status);
+            document.getElementById('cim-items').innerHTML = kael_invoiceLineItemsHtml(inv.caseItems || []);
+            document.getElementById('cim-total').textContent = `$${(inv.amount || 0).toFixed(2)}`;
+            // Due notice
+            const dueEl = document.getElementById('cim-due-notice');
+            if (inv.dueDate && inv.status !== 'Paid') {
+                const color = inv.status === 'Overdue' ? '#fef2f2' : '#fffbeb';
+                const textColor = inv.status === 'Overdue' ? '#991b1b' : '#92400e';
+                dueEl.innerHTML = `<div style="background:${color};border-radius:8px;padding:0.6rem 0.85rem;font-size:0.82rem;font-weight:600;color:${textColor};">
+                    <i class="fa-solid fa-calendar-days"></i> Due by ${inv.dueDate}${inv.status === 'Overdue' ? ' — OVERDUE' : ''}
+                </div>`;
+            } else { dueEl.innerHTML = ''; }
+            // Hide ack buttons if already paid
+            document.getElementById('cim-ack-area').style.display = inv.status === 'Paid' ? 'none' : 'flex';
+            document.getElementById('cim-messages').innerHTML = kael_invMessagesHtml(inv.messages || [], 'client');
+            const md = document.getElementById('cim-messages');
+            md.scrollTop = md.scrollHeight;
+            document.getElementById('client-inv-modal').style.display = 'flex';
+        }
+
+        function clientAck(type) {
+            if (!_clientInvId) return;
+            kael_setClientAck(_clientInvId, type);
+            const inv = kael_findInvoice(_clientInvId);
+            document.getElementById('cim-messages').innerHTML = kael_invMessagesHtml(inv.messages || [], 'client');
+            const md = document.getElementById('cim-messages');
+            md.scrollTop = md.scrollHeight;
+            document.getElementById('cim-ack-area').style.display = 'none';
+            loadClientBilling();
+        }
+
+        function clientInvMsg() {
+            const input = document.getElementById('cim-msg-input');
+            const text = input.value.trim();
+            if (!text || !_clientInvId) return;
+            kael_addInvoiceMessage(_clientInvId, 'client', text);
+            input.value = '';
+            const inv = kael_findInvoice(_clientInvId);
+            document.getElementById('cim-messages').innerHTML = kael_invMessagesHtml(inv.messages || [], 'client');
+            const md = document.getElementById('cim-messages');
+            md.scrollTop = md.scrollHeight;
+        }
+    </script>
+    <script src="app.js" defer></script>
+    </div>
+</body>
+
+</html>
